@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Search</title>
+</head>
+<body>
+    <h1>Book Search</h1>
+    <input type="text" id="bookInput" placeholder="Enter book title">
+    <button onclick="searchBooks()">Search</button>
+    <div id="bookList"></div>
+
+    <div id="buyForm" style="display: none;">
+        <h2>Buy Form</h2>
+        <form onsubmit="submitForm()">
+            <input type="text" id="nameInput" placeholder="Name" required><br>
+            <input type="email" id="emailInput" placeholder="Email" required><br>
+            <input type="tel" id="phoneInput" placeholder="Phone" required><br>
+            <input type="text" id="addressInput" placeholder="Address" required><br>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <script>
+        function searchBooks() {
+            var bookTitle = document.getElementById("bookInput").value;
+            fetch("https://www.googleapis.com/books/v1/volumes?q=" + bookTitle + "&key=AIzaSyAQMc0EdreA40QPsSkkHKupk2SaqSmQ274")
+
+                .then(response => response.json())
+                .then(data => {
+                    var bookList = document.getElementById("bookList");
+                    bookList.innerHTML = "";
+                    data.items.forEach(book => {
+                        var title = book.volumeInfo.title;
+                        var author = book.volumeInfo.authors ? book.volumeInfo.authors[0] : "Unknown";
+                        var button = `<button onclick="showBuyForm('${title}', '${author}')">Buy</button>`;
+                        bookList.innerHTML += `<p>${title} - ${author} ${button}</p>`;
+                    });
+                });
+        }
+
+        function showBuyForm(title, author) {
+            document.getElementById("buyForm").style.display = "block";
+            document.getElementById("buyForm").setAttribute("data-title", title);
+            document.getElementById("buyForm").setAttribute("data-author", author);
+        }
+
+        function submitForm() {
+            var title = document.getElementById("buyForm").getAttribute("data-title");
+            var author = document.getElementById("buyForm").getAttribute("data-author");
+            var name = document.getElementById("nameInput").value;
+            var email = document.getElementById("emailInput").value;
+            var phone = document.getElementById("phoneInput").value;
+            var address = document.getElementById("addressInput").value;
+
+            // Here you should send the form data to Google Sheets
+            // You'll need to use Google Sheets API for this
+
+            // For now, let's just log the data
+            console.log("Book: " + title + " - " + author);
+            console.log("Name: " + name);
+            console.log("Email: " + email);
+            console.log("Phone: " + phone);
+            console.log("Address: " + address);
+
+            // Reset form
+            document.getElementById("nameInput").value = "";
+            document.getElementById("emailInput").value = "";
+            document.getElementById("phoneInput").value = "";
+            document.getElementById("addressInput").value = "";
+
+            // Hide form
+            document.getElementById("buyForm").style.display = "none";
+        }
+    </script>
+</body>
+</html>
